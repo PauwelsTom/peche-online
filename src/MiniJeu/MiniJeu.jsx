@@ -1,27 +1,22 @@
 import { Component } from "react";
-import "./MiniJeu.css"
+import "./MiniJeu.css";
 import { gameDict } from "../Data";
 import { TunaBar } from "./TunaBar";
 
-// game, space
 export class MiniJeu extends Component {
-    constructor(props) {
-        super();
-        this.state = {}
-        this.game = this.getGame(props.game);
-    }
-
     getGame = (game) => {
-        switch(game) {
+        switch (game) {
             case gameDict.TunaBar:
-                return <TunaBar space={this.props.space}/>;
+                return <TunaBar space={this.props.space} />;
+            default:
+                return null;
         }
-    }
+    };
 
     render() {
         return (
             <div id="MiniJeuDiv">
-                {this.game}
+                {this.getGame(this.props.game)}
             </div>
         );
     }
