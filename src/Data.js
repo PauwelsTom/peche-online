@@ -5,5 +5,6 @@ export const playerState = {
 };
 
 export const gameDict = {
+    "None": 0,
     "TunaBar": 1,
 }

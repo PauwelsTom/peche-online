@@ -12,6 +12,7 @@ export class Player extends Component {
             state: playerState.Catching,
             spacePressed: false,
             poisson: false,
+            MiniJeu: gameDict.TunaBar,
         };
     }
 
@@ -45,7 +46,6 @@ export class Player extends Component {
                 break;
 
             case playerState.Catching:
-                // this.setState({ state: playerState.Idle });
                 break;
         }
     }
@@ -66,6 +66,10 @@ export class Player extends Component {
                 this.setState({ spacePressed: false });
             }
         }
+    }
+
+    QuitGame = (bool) => {
+        this.setState({ MiniJeu: gameDict.None, state: playerState.Idle});
     }
 
     componentDidMount() {
@@ -100,7 +104,9 @@ export class Player extends Component {
         return (
             <div id="PlayerDiv">
                 [{this.state.state}] Player (Espace : {this.state.spacePressed ? "Oui" : "Non"})
-                {this.state.state === playerState.Catching? <MiniJeu game={gameDict.TunaBar} space={this.state.spacePressed}/>: <div></div>}
+                {this.state.state === playerState.Catching? 
+                    <MiniJeu game={gameDict.TunaBar} space={this.state.spacePressed} Quit={this.QuitGame}/>
+                    : <div></div>}
             </div>
         );
     }
