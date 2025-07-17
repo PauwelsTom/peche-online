@@ -11,7 +11,7 @@ export class TunaBar extends Component {
         };
         this.matchSpeed = 0;
         this.matchSize = 10;
-        this.maxSpeed = 8;
+        this.maxSpeed = 3;
         this.match = 50 - this.matchSize / 2;
         this.player = 50;
         this.playing = true;

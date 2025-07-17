@@ -1,18 +1,18 @@
 import { Component } from "react";
-import "./Player.css"
+import "./Game.css"
 import { gameDict, playerState } from "../Data";
 import { getRandom } from "../Functions";
 import { MiniJeu } from "../MiniJeu/MiniJeu";
 
-
-export class Player extends Component {
+// space
+export class Game extends Component {
     constructor(props) {
         super();
         this.state = {
-            state: playerState.Catching,
+            state: playerState.Idle,
             spacePressed: false,
             poisson: false,
-            MiniJeu: gameDict.TunaBar,
+            MiniJeu: gameDict.None,
         };
     }
 
@@ -29,8 +29,41 @@ export class Player extends Component {
             case playerState.Catching:
                 document.getElementById("PlayerDiv").style.backgroundColor = "red";
                 break;
+
+            case playerState.Message:
+                document.getElementById("PlayerDiv").style.backgroundColor = "green";
+                break;
+            
         }
     }
+
+    QuitGame = (win) => {
+        this.setState({MiniJeu: gameDict.None});
+
+        if (win) {
+            this.QuitMessage(0, 10);
+            this.setState({state: playerState.Message});
+        } else {
+            this.setState({state: playerState.Idle});
+        }
+    }
+
+    QuitMessage = (time, timeStep) => {
+        setTimeout(() => {
+            if (time >= 1000) {
+                this.setState({
+                    state: playerState.Idle,
+                });
+            } else if (this.state.spacePressed) {
+                this.QuitMessage(time + timeStep, timeStep);
+            } else {
+                this.QuitMessage(0, timeStep);
+            }
+        }, timeStep);
+    }
+
+
+    //! SPACE
 
     handleSpace = () => {
         switch (this.state.state) {
@@ -42,7 +75,16 @@ export class Player extends Component {
                 break;
 
             case playerState.Fishing:
-                this.setState({ state: this.state.poisson? playerState.Catching: playerState.Idle });
+                if (this.state.poisson) {
+                    this.setState({ 
+                        MiniJeu: gameDict.TunaBar,
+                        state: playerState.Catching,
+                    });
+                } else {
+                    this.setState({ 
+                        state: playerState.Idle
+                    });
+                }
                 break;
 
             case playerState.Catching:
@@ -68,14 +110,18 @@ export class Player extends Component {
         }
     }
 
-    QuitGame = (bool) => {
-        this.setState({ MiniJeu: gameDict.None, state: playerState.Idle});
-    }
+
+    //! COMPONENT MANAGEMENT
 
     componentDidMount() {
         window.addEventListener("keydown", this.SpaceDown);
         window.addEventListener("keyup", this.SpaceUp);
         this.updateColor(); // pour appliquer la couleur initiale
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener("keydown", this.SpaceDown);
+        window.removeEventListener("keyup", this.SpaceUp);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -95,17 +141,13 @@ export class Player extends Component {
         }
     }
 
-    componentWillUnmount() {
-        window.removeEventListener("keydown", this.SpaceDown);
-        window.removeEventListener("keyup", this.SpaceUp);
-    }
 
     render() {
         return (
             <div id="PlayerDiv">
                 [{this.state.state}] Player (Espace : {this.state.spacePressed ? "Oui" : "Non"})
                 {this.state.state === playerState.Catching? 
-                    <MiniJeu game={gameDict.TunaBar} space={this.state.spacePressed} Quit={this.QuitGame}/>
+                    <MiniJeu game={this.state.MiniJeu} space={this.state.spacePressed} Quit={this.QuitGame}/>
                     : <div></div>}
             </div>
         );

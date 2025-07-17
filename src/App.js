@@ -1,13 +1,20 @@
+import { Component } from 'react';
 import './App.css';
-import { Player } from './Component/Player';
-import { MiniJeu } from './MiniJeu/MiniJeu';
+import { Game } from './Component/Game';
 
-function App() {
-    return (
-        <div className="App">
-            <Player />
-        </div>
-    );
+class  App extends Component {
+    constructor(props) {
+        super(props);
+    }
+
+
+    render() {
+        return (
+            <div className="App">
+                <Game />
+            </div>
+        );
+    }
 }
 
 export default App;
