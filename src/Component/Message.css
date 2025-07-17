@@ -1,20 +1,50 @@
 #MessageDiv {
-    z-index: 1;
-    position: absolute;
-    top: 10vh;
-    left: 10vw;
-    height: 80vh;
-    width: 80vw;
-    background-color: white;
-    border: 1px solid black;
-    border-radius: 5vh;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 16px;
+    background-color: #ffffff;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    min-width: 300px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #333;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
 #ImagePoisson {
-    height: 30vh;
-    margin-bottom: 10vh;
+    height: 80px;
+    width: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #4caf50;
+}
+
+.progress-ring {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    transform: rotate(-90deg); /* Start from top instead of right */
+}
+
+.progress-ring__circle {
+    transition: stroke-dashoffset 0.1s linear;
+    transform: rotate(0deg); /* Keep as is to avoid offset shifts */
+    transform-origin: 50% 50%;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

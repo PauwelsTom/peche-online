@@ -14,6 +14,7 @@ export class Game extends Component {
             spacePressed: false,
             poisson: false,
             MiniJeu: gameDict.None,
+            timeSave: 0,
         };
     }
 
@@ -50,6 +51,7 @@ export class Game extends Component {
     }
 
     QuitMessage = (time, timeStep) => {
+        this.setState({timeSave: time});
         setTimeout(() => {
             if (time >= 1000) {
                 this.setState({
@@ -153,7 +155,7 @@ export class Game extends Component {
                     : <div></div>}
 
                 {this.state.state === playerState.Message?
-                    <Message />
+                    <Message time={this.state.timeSave}/>
                     : <div></div>
                 }
             </div>
