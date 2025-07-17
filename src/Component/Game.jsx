@@ -3,6 +3,7 @@ import "./Game.css"
 import { gameDict, playerState } from "../Data";
 import { getRandom } from "../Functions";
 import { MiniJeu } from "../MiniJeu/MiniJeu";
+import { Message } from "./Message";
 
 // space
 export class Game extends Component {
@@ -146,9 +147,15 @@ export class Game extends Component {
         return (
             <div id="PlayerDiv">
                 [{this.state.state}] Player (Espace : {this.state.spacePressed ? "Oui" : "Non"})
+                
                 {this.state.state === playerState.Catching? 
                     <MiniJeu game={this.state.MiniJeu} space={this.state.spacePressed} Quit={this.QuitGame}/>
                     : <div></div>}
+
+                {this.state.state === playerState.Message?
+                    <Message />
+                    : <div></div>
+                }
             </div>
         );
     }
