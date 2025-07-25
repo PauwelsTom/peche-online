@@ -1,6 +1,6 @@
 import { Component } from "react";
 import "./Game.css"
-import { gameDict, playerState } from "../Data";
+import { gameDict, getSprite, playerState } from "../Data";
 import { getRandom } from "../Functions";
 import { MiniJeu } from "../MiniJeu/MiniJeu";
 import { Message } from "./Message";
@@ -8,7 +8,7 @@ import { Message } from "./Message";
 // space
 export class Game extends Component {
     constructor(props) {
-        super();
+        super(props);
         this.state = {
             state: playerState.Idle,
             spacePressed: false,
@@ -36,6 +36,8 @@ export class Game extends Component {
                 document.getElementById("PlayerDiv").style.backgroundColor = "green";
                 break;
             
+            default:
+                break;
         }
     }
 
@@ -78,19 +80,22 @@ export class Game extends Component {
                 break;
 
             case playerState.Fishing:
-                if (this.state.poisson) {
-                    this.setState({ 
-                        MiniJeu: gameDict.TunaBar,
-                        state: playerState.Catching,
-                    });
-                } else {
-                    this.setState({ 
-                        state: playerState.Idle
-                    });
-                }
+                this.setState({ 
+                    state: playerState.Idle
+                });
                 break;
-
+                
+            case playerState.Biting:
+                this.setState({ 
+                    MiniJeu: gameDict.TunaBar,
+                    state: playerState.Catching,
+                });
+                break;
+                    
             case playerState.Catching:
+                break;
+            
+            default:
                 break;
         }
     }
@@ -133,7 +138,7 @@ export class Game extends Component {
             this.updateColor();
             if (this.state.state === playerState.Fishing) {
                 setTimeout(() => {
-                    this.setState({ poisson: true }, () => {this.updateColor()});
+                    this.setState({ poisson: true, state: playerState.Biting }, () => {this.updateColor()});
                     setTimeout(() => {
                         if (this.state.state === playerState.Fishing) {
                             this.setState({ poisson: false, state: playerState.Idle }, () => {this.updateColor()});
@@ -146,9 +151,12 @@ export class Game extends Component {
 
 
     render() {
+        const sprite = getSprite(this.state.state);
+
         return (
             <div id="PlayerDiv">
-                [{this.state.state}] Player (Espace : {this.state.spacePressed ? "Oui" : "Non"})
+                <img src={sprite} alt="Player" id="MainSprite"/>
+                {/* [{this.state.state}] Player (Espace : {this.state.spacePressed ? "Oui" : "Non"}) */}
                 
                 {this.state.state === playerState.Catching? 
                     <MiniJeu game={this.state.MiniJeu} space={this.state.spacePressed} Quit={this.QuitGame}/>
