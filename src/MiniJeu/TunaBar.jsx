@@ -2,7 +2,7 @@ import { Component } from "react";
 import "./TunaBar.css"
 import { getRandom } from "../Functions";
 
-// Quit
+// space, Quit
 export class TunaBar extends Component {
     constructor(props) {
         super(props);

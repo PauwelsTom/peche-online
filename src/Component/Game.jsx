@@ -12,35 +12,13 @@ export class Game extends Component {
         this.state = {
             state: playerState.Idle,
             spacePressed: false,
-            poisson: false,
             MiniJeu: gameDict.None,
             timeSave: 0,
         };
     }
 
-    updateColor = () => {
-        switch (this.state.state) {
-            case playerState.Idle:
-                document.getElementById("PlayerDiv").style.backgroundColor = "gray";
-                break;
 
-            case playerState.Fishing:
-                document.getElementById("PlayerDiv").style.backgroundColor = (this.state.poisson? "yellow": "blue");
-                break;
-
-            case playerState.Catching:
-                document.getElementById("PlayerDiv").style.backgroundColor = "red";
-                break;
-
-            case playerState.Message:
-                document.getElementById("PlayerDiv").style.backgroundColor = "green";
-                break;
-            
-            default:
-                break;
-        }
-    }
-
+    //* Fonction qui ferme la fenetre de minijeu
     QuitGame = (win) => {
         this.setState({MiniJeu: gameDict.None});
 
@@ -52,6 +30,8 @@ export class Game extends Component {
         }
     }
 
+
+    //* Fonction qui ferme la fenetre de message
     QuitMessage = (time, timeStep) => {
         this.setState({timeSave: time});
         setTimeout(() => {
@@ -68,6 +48,28 @@ export class Game extends Component {
     }
 
 
+    //* Fonction qui gere l'apparition du poisson
+    // TODO: Rendre les temps de catch, et les temps d'attentes modulables en fonction du poisson
+    HandleFishingTimer = (time=null) => {
+        if (time == null) {
+            time = getRandom(1000, 5000);
+        } else if (time <= 0) {
+            //? On passe en mode biting pour 0.5 secondes
+            this.setState({ state: playerState.Biting });
+            setTimeout(() => {
+                if (this.state.state === playerState.Fishing) {
+                    this.setState({ state: playerState.Idle });
+                }
+            }, 500);
+        }
+        setTimeout(() => {
+            if (this.state.state === playerState.Fishing) {
+                this.HandleFishingTimer(time - 50);
+            }
+        }, 50);
+    }
+
+
     //! SPACE
 
     handleSpace = () => {
@@ -75,7 +77,6 @@ export class Game extends Component {
             case playerState.Idle:
                 this.setState({ 
                     state: playerState.Fishing,
-                    poisson: false,
                 });
                 break;
 
@@ -87,7 +88,7 @@ export class Game extends Component {
                 
             case playerState.Biting:
                 this.setState({ 
-                    MiniJeu: gameDict.TunaBar,
+                    MiniJeu: gameDict.SmashBar,
                     state: playerState.Catching,
                 });
                 break;
@@ -124,7 +125,6 @@ export class Game extends Component {
     componentDidMount() {
         window.addEventListener("keydown", this.SpaceDown);
         window.addEventListener("keyup", this.SpaceUp);
-        this.updateColor(); // pour appliquer la couleur initiale
     }
 
     componentWillUnmount() {
@@ -133,18 +133,10 @@ export class Game extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        // Si l'état du player change, mettre à jour la couleur
+        // Si l'état du player change
         if (prevState.state !== this.state.state) {
-            this.updateColor();
             if (this.state.state === playerState.Fishing) {
-                setTimeout(() => {
-                    this.setState({ poisson: true, state: playerState.Biting }, () => {this.updateColor()});
-                    setTimeout(() => {
-                        if (this.state.state === playerState.Fishing) {
-                            this.setState({ poisson: false, state: playerState.Idle }, () => {this.updateColor()});
-                        }
-                    }, 500);
-                }, getRandom(1000, 5000));
+                this.HandleFishingTimer();
             }
         }
     }
@@ -153,19 +145,26 @@ export class Game extends Component {
     render() {
         const sprite = getSprite(this.state.state);
 
+        //? On recupere le MiniJeu s'il y en a un
+        let jeu = <div></div>;
+        if (this.state.state === playerState.Catching) {
+            jeu =<MiniJeu game={this.state.MiniJeu} space={this.state.spacePressed} Quit={this.QuitGame}/>;
+        }
+
+        //? On recupere le Message s'il y en a un
+        let message = <div></div>;
+        if (this.state.state === playerState.Message) {
+            message = <Message time={this.state.timeSave}/>;
+        }
+
+
         return (
             <div id="PlayerDiv">
                 <img src={sprite} alt="Player" id="MainSprite"/>
-                {/* [{this.state.state}] Player (Espace : {this.state.spacePressed ? "Oui" : "Non"}) */}
                 
-                {this.state.state === playerState.Catching? 
-                    <MiniJeu game={this.state.MiniJeu} space={this.state.spacePressed} Quit={this.QuitGame}/>
-                    : <div></div>}
+                {jeu}
 
-                {this.state.state === playerState.Message?
-                    <Message time={this.state.timeSave}/>
-                    : <div></div>
-                }
+                {message}
             </div>
         );
     }

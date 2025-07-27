@@ -2,17 +2,28 @@ import { Component } from "react";
 import "./MiniJeu.css";
 import { gameDict } from "../Data";
 import { TunaBar } from "./TunaBar";
+import { SmashBar } from "./SmashBar";
+
+/* 
+
+Idees : 
+
+-> SmashBar: Il faut defoncer la barre espace le plus vite possible
+Rythm-Tuna: Il faut appuyer en rythme sur espace
+MaxRisks: Il faut rester appuye sur la barres espace jusqu'au dernier moment, plus tu relache tard, plus tu gagnes de points 
+
+*/
 
 // Quit, space
 export class MiniJeu extends Component {
     getGame = (game) => {
         switch (game) {
             case gameDict.TunaBar:
-                this.setState({game: <TunaBar space={this.props.space} Quit={this.Quit}/>});
-                break;
+                return <TunaBar space={this.props.space} Quit={this.props.Quit}/>;
+            case gameDict.SmashBar:
+                return <SmashBar space={this.props.space} Quit={this.props.Quit}/>;
             default:
-                this.setState({game: <div></div>});
-                break;
+                return <div></div>;
         }
     };
 
@@ -21,15 +32,8 @@ export class MiniJeu extends Component {
     }
 
     render() {
-        let game = gameDict.None;
-        switch (this.props.game) {
-            case gameDict.TunaBar:
-                game = <TunaBar space={this.props.space} Quit={this.props.Quit}/>;
-                break;
-            default:
-                game = <div></div>;
-                break;
-        }
+        const game = this.getGame(this.props.game);
+
         return (
             <div id="MiniJeuDiv">
                 {game}

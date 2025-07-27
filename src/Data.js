@@ -24,4 +24,5 @@ export const getSprite = (ps) => {
 export const gameDict = {
     "None": 0,
     "TunaBar": 1,
+    "SmashBar": 2,
 }
