@@ -55,8 +55,9 @@ function authenticateToken(req, res, next) {
 }
 
 
-// === POST /register ===
+//! === POST /register ===
 app.post('/register', async (req, res) => {
+    console.log("Requete de register");
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -79,8 +80,9 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// === POST /login ===
+//! === POST /login ===
 app.post("/login", (req, res) => {
+    console.log("Requete de login");
     const { username, password } = req.body;
     const users = loadUsers();
 
@@ -96,8 +98,9 @@ app.post("/login", (req, res) => {
 });
 
 
-// === POST /newPoisson ===
+//! === POST /newPoisson ===
 app.post("/newPoisson", authenticateToken, (req, res) => {
+    console.log("Requete de nouveau poisson");
     let max = 0;
     for (const f in PoissonDict) {
         max += PoissonDict[f].rarity;
@@ -112,8 +115,34 @@ app.post("/newPoisson", authenticateToken, (req, res) => {
 });
 
 
-// === GET /test ===
+//! === POST /checkToken ===
+app.post("/checkToken", (req, res) => {
+    console.log("Requete check token");
+    
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ success: false, message: "No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        return res.status(200).json({
+            success: true,
+            message: "Token is valid",
+            user: decoded,
+        });
+    } catch (err) {
+        return res.status(401).json({ success: false, message: "Invalid or expired token" });
+    }
+});
+
+
+//! === GET /test ===
 app.get("/test", (req, res) => {
+    console.log("Requete de test");
     return res.json("test");
 });
 

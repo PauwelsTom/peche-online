@@ -1,3 +1,103 @@
 #ConnexionDiv {
-    background-color: white;
+    position: absolute;
+    top: 10vh;
+    left: 10vw;
+    width: 80vw;
+    height: 80vh;
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3vh;
+    font-size: 1.5vh;
+    transition: ease 0.5s;
+}
+
+#ConnexionTitle {
+    font-size: 5vh;
+}
+
+#ConnexionDiv span {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: inline-block;
+    color: #333;
+        transition: ease 0.5s;
+}
+
+#ConnexionDiv input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+#ConnexionDiv input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+#ConnexionDiv > div:last-child {
+    text-align: center;
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#ConnexionDiv > div:last-child:hover {
+    background-color: #0056b3;
+}
+
+.champsConnexion {
+    transition: all 0.4s ease;
+    max-width: 15vw;
+}
+
+#confimationDiv > input {
+    width: 100%;
+}
+
+#ConfirmationDiv {
+    width: 15vw;
+    transition: all 0.4s ease;
+    opacity: 1;
+    max-height: 100px; /* hauteur max visible */
+}
+
+#ConfirmationDiv.hidden {
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    pointer-events: none;
+}
+
+#ConfirmationDiv.visible {
+    opacity: 1;
+    max-height: 8vh;
+}
+
+
+
+#gotoRegister {
+    height: 2vh;
+    color: #888;
+    transition: ease 0.5s;
+}
+
+#gotoRegister:hover {
+    color: blue;
+    font-size: 1.6vh;
+    cursor: pointer;
 }

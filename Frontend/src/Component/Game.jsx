@@ -4,6 +4,7 @@ import { gameDict, getSprite, playerState } from "../Data";
 import { getRandom } from "../Functions";
 import { MiniJeu } from "../MiniJeu/MiniJeu";
 import { Message } from "./Message";
+import { Connexion } from "./Connexion";
 
 // space
 export class Game extends Component {
@@ -14,6 +15,7 @@ export class Game extends Component {
             spacePressed: false,
             MiniJeu: gameDict.None,
             timeSave: 0,
+            token: null,
         };
     }
 
@@ -69,9 +71,43 @@ export class Game extends Component {
         }, 50);
     }
 
+    //* Verifie lors du chargement de la page si le JWT est valide
+    CheckTokenConnexion = () => {
+        // Tentative de restauration du token
+        const stored = localStorage.getItem("authToken");
+        if (stored) {
+            fetch("http://localhost:3001/checkToken", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${stored}`
+                },
+                body: JSON.stringify({}) // body optionnel parce qu'on envoie dans header
+            })
+                .then(res => res.json().then(data => ({ ok: res.success, body: data })))
+                .then(({ ok, body }) => {
+                    if (ok && body.success) {
+                        alert("Success");
+                        this.setState({ token: stored });
+                    } else {
+                        // invalide / expiré : purge
+                        alert("Failed");
+                        localStorage.removeItem("authToken");
+                        this.setState({ token: null });
+                    }
+                })
+                .catch(() => {
+                    // en cas d'erreur réseau on peut garder le token en attente ou l'effacer
+                    this.setState({ token: null });
+                    localStorage.removeItem("authToken");
+                });
+        }
+    }
+
 
     //! SPACE
 
+    //* Gere l'appui sur la barre d'espace
     handleSpace = () => {
         switch (this.state.state) {
             case playerState.Idle:
@@ -88,7 +124,7 @@ export class Game extends Component {
                 
             case playerState.Biting:
                 this.setState({ 
-                    MiniJeu: gameDict.SmashBar,
+                    MiniJeu: gameDict.TunaBar,
                     state: playerState.Catching,
                 });
                 break;
@@ -101,7 +137,7 @@ export class Game extends Component {
         }
     }
 
-    // === Événements clavier ===
+    //* Espace appuye
     SpaceDown = (event) => {
         if (event.code === "Space") {
             if (!this.state.spacePressed) {
@@ -111,6 +147,7 @@ export class Game extends Component {
         }
     }
 
+    //* Espace relache
     SpaceUp = (event) => {
         if (event.code === "Space") {
             if (this.state.spacePressed) {
@@ -125,6 +162,8 @@ export class Game extends Component {
     componentDidMount() {
         window.addEventListener("keydown", this.SpaceDown);
         window.addEventListener("keyup", this.SpaceUp);
+
+        this.CheckTokenConnexion();
     }
 
     componentWillUnmount() {
@@ -157,6 +196,11 @@ export class Game extends Component {
             message = <Message time={this.state.timeSave}/>;
         }
 
+        let connexion = <div></div>;
+        if (this.state.token == null) {
+            connexion = <Connexion Save={(t) => this.setState({token: t})}/>;
+        }
+
 
         return (
             <div id="PlayerDiv">
@@ -165,6 +209,9 @@ export class Game extends Component {
                 {jeu}
 
                 {message}
+
+                {connexion}
+
             </div>
         );
     }
