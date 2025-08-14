@@ -73,36 +73,34 @@ export class Game extends Component {
 
     //* Verifie lors du chargement de la page si le JWT est valide
     CheckTokenConnexion = () => {
-        // Tentative de restauration du token
         const stored = localStorage.getItem("authToken");
-        if (stored) {
-            fetch("http://localhost:3001/checkToken", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${stored}`
-                },
-                body: JSON.stringify({}) // body optionnel parce qu'on envoie dans header
-            })
-                .then(res => res.json().then(data => ({ ok: res.success, body: data })))
-                .then(({ ok, body }) => {
-                    if (ok && body.success) {
-                        alert("Success");
-                        this.setState({ token: stored });
-                    } else {
-                        // invalide / expiré : purge
-                        alert("Failed");
-                        localStorage.removeItem("authToken");
-                        this.setState({ token: null });
-                    }
-                })
-                .catch(() => {
-                    // en cas d'erreur réseau on peut garder le token en attente ou l'effacer
-                    this.setState({ token: null });
-                    localStorage.removeItem("authToken");
-                });
-        }
-    }
+        if (!stored) return;
+
+        fetch("http://localhost:3001/checkToken", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${stored}`
+            }
+        })
+        .then(res => res.json().then(data => ({ ok: res.ok, body: data })))
+        .then(({ ok, body }) => {
+            if (ok && body.success) {
+                console.log("Token valide, utilisateur :", body.user);
+                this.setState({ token: stored });
+                // Tu peux aussi restaurer le username depuis body.user.username
+            } else {
+                console.warn("Token invalide ou expiré");
+                localStorage.removeItem("authToken");
+                this.setState({ token: null });
+            }
+        })
+        .catch(err => {
+            console.error("Erreur réseau :", err);
+            localStorage.removeItem("authToken");
+            this.setState({ token: null });
+        });
+    };
+
 
 
     //! SPACE

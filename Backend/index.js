@@ -120,24 +120,40 @@ app.post("/checkToken", (req, res) => {
     console.log("Requete check token");
     
     const authHeader = req.headers.authorization;
-
+    
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({ success: false, message: "No token provided" });
     }
-
+    
     const token = authHeader.split(" ")[1];
-
+    
     try {
-        const decoded = jwt.verify(token, JWT_SECRET);
+        // Vérification du token avec la bonne clé
+        const decoded = jwt.verify(token, SECRET_KEY);
+
+        // Charger l'utilisateur depuis la base
+        const users = loadUsers();
+        const user = users.find(u => u.username === decoded.username);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // Si on veut « connecter » le joueur → on renvoie ses infos utiles
         return res.status(200).json({
             success: true,
             message: "Token is valid",
-            user: decoded,
+            user: {
+                username: user.username,
+                // Ne pas renvoyer le mot de passe hashé
+                // Ajouter d'autres données si besoin
+            },
         });
     } catch (err) {
         return res.status(401).json({ success: false, message: "Invalid or expired token" });
     }
 });
+
 
 
 //! === GET /test ===

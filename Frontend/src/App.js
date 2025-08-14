@@ -2,7 +2,7 @@ import { Component } from 'react';
 import './App.css';
 import { Game } from './Component/Game';
 
-class  App extends Component {
+class App extends Component {
 
     render() {
         return (
